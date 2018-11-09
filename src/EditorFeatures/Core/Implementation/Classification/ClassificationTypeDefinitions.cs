@@ -28,6 +28,13 @@ namespace Microsoft.CodeAnalysis.Editor.Implementation.Classification
         [BaseDefinition(PredefinedClassificationTypeNames.FormalLanguage)]
         internal readonly ClassificationTypeDefinition StringVerbatimTypeDefinition;
         #endregion
+        #region Keyword - Control
+        [Export]
+        [Name(ClassificationTypeNames.ControlKeyword)]
+        [BaseDefinition(PredefinedClassificationTypeNames.Keyword)]
+        internal ClassificationTypeDefinition ControlKeywordTypeDefinition;
+        #endregion
+
 
         #region User Types - Classes
         [Export]
@@ -111,7 +118,7 @@ namespace Microsoft.CodeAnalysis.Editor.Implementation.Classification
         #region Extension Method Name
         [Export]
         [Name(ClassificationTypeNames.ExtensionMethodName)]
-        [BaseDefinition(PredefinedClassificationTypeNames.Identifier)]
+        [BaseDefinition(ClassificationTypeNames.MethodName)]
         internal readonly ClassificationTypeDefinition ExtensionMethodNameTypeDefinition;
         #endregion
         #region Property Name
@@ -125,6 +132,18 @@ namespace Microsoft.CodeAnalysis.Editor.Implementation.Classification
         [Name(ClassificationTypeNames.EventName)]
         [BaseDefinition(PredefinedClassificationTypeNames.Identifier)]
         internal readonly ClassificationTypeDefinition EventNameTypeDefinition;
+        #endregion
+        #region Namespace Name
+        [Export]
+        [Name(ClassificationTypeNames.NamespaceName)]
+        [BaseDefinition(PredefinedClassificationTypeNames.Identifier)]
+        internal readonly ClassificationTypeDefinition NamespaceNameTypeDefinition;
+        #endregion
+        #region Label Name
+        [Export]
+        [Name(ClassificationTypeNames.LabelName)]
+        [BaseDefinition(PredefinedClassificationTypeNames.Identifier)]
+        internal readonly ClassificationTypeDefinition LabelNameTypeDefinition;
         #endregion
 
         #region XML Doc Comments - Attribute Name 
@@ -253,6 +272,21 @@ namespace Microsoft.CodeAnalysis.Editor.Implementation.Classification
         [Name(ClassificationTypeNames.XmlLiteralText)]
         [BaseDefinition(PredefinedClassificationTypeNames.FormalLanguage)]
         internal readonly ClassificationTypeDefinition XmlLiteralTextTypeDefinition;
+        #endregion
+
+        #region Static Symbol
+        // Set the base definition to be formal language in order to not have any foreground or background colors
+        [Export]
+        [Name(ClassificationTypeNames.StaticSymbol)]
+        [BaseDefinition(PredefinedClassificationTypeNames.FormalLanguage)]
+        internal readonly ClassificationTypeDefinition StaticSymbolTypeDefinition;
+        #endregion
+
+        #region Operator - Overload Name
+        [Export]
+        [Name(ClassificationTypeNames.OperatorOverload)]
+        [BaseDefinition(PredefinedClassificationTypeNames.Operator)]
+        internal readonly ClassificationTypeDefinition OperatorOverloadTypeDefinition;
         #endregion
     }
 }

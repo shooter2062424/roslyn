@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.IntegrationTest.Setup
     /// This class is exported as a workspace service with layer: <see cref="ServiceLayer.Host"/>. This ensures that TestExtensionManager
     /// is preferred over EditorLayerExtensionManager (which has layer: <see cref="ServiceLayer.Editor"/>) when running VS integration tests.
     /// </remarks>
-    [Shared, ExportWorkspaceServiceFactory(typeof(IExtensionManager), ServiceLayer.Host)]
+    ///[Shared, ExportWorkspaceServiceFactory(typeof(IExtensionManager), ServiceLayer.Host)]
     internal class TestExtensionManager : IWorkspaceServiceFactory
     {
         private readonly TestExtensionErrorHandler _errorHandler;

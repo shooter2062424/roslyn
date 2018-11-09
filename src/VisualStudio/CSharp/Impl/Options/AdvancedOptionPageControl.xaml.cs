@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using EnvDTE;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Editor.CSharp.SplitStringLiteral;
@@ -12,15 +15,22 @@ using Microsoft.CodeAnalysis.Remote;
 using Microsoft.CodeAnalysis.Structure;
 using Microsoft.CodeAnalysis.SymbolSearch;
 using Microsoft.CodeAnalysis.ValidateFormatString;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.LanguageServices.Implementation.Options;
+using Microsoft.VisualStudio.Shell.Interop;
+using FontsAndColorsCategory = Microsoft.VisualStudio.Shell.Interop.FontsAndColorsCategory;
 
 namespace Microsoft.VisualStudio.LanguageServices.CSharp.Options
 {
     internal partial class AdvancedOptionPageControl : AbstractOptionPageControl
     {
+        readonly EnhancedColorApplier enhancedColorApplier;
+
         public AdvancedOptionPageControl(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             InitializeComponent();
+
+            enhancedColorApplier = new EnhancedColorApplier(serviceProvider);
 
             BindToFullSolutionAnalysisOption(Enable_full_solution_analysis, LanguageNames.CSharp);
             BindToOption(Perform_editor_feature_analysis_in_external_process, RemoteFeatureOptions.OutOfProcessAllowed);
@@ -61,6 +71,98 @@ namespace Microsoft.VisualStudio.LanguageServices.CSharp.Options
             BindToOption(prefer_auto_properties, ImplementTypeOptions.PropertyGenerationBehavior, ImplementTypePropertyGenerationBehavior.PreferAutoProperties, LanguageNames.CSharp);
 
             BindToOption(Report_invalid_placeholders_in_string_dot_format_calls, ValidateFormatStringOption.ReportInvalidPlaceholdersInStringDotFormatCalls, LanguageNames.CSharp);
+        }
+
+        private void Apply_enhanced_colors_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            enhancedColorApplier.SetEnhancedColors();
+        }
+
+        private void Apply_classic_colors_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            enhancedColorApplier.SetDefaultColors();
+        }
+
+        class EnhancedColorApplier
+        {
+            readonly IVsFontAndColorDefaultsProvider fontAndColorDefaultsProvider;
+            readonly IVsFontAndColorCacheManager fontAndColorManager;
+            readonly IVsFontAndColorStorage fontAndColorStorage;
+            readonly IVsFontAndColorStorage3 fontAndColorStorage3;
+            readonly IVsFontAndColorUtilities fontAndColorUtilities;
+            readonly DTE dte;
+            readonly Guid editorColorsGuid;
+
+            const uint DefaultForegroundColor = 0x01000000u;
+            const uint DefaultBackgroundColor = 0x01000001u;
+
+            public EnhancedColorApplier(IServiceProvider serviceProvider)
+            {
+                fontAndColorDefaultsProvider = (IVsFontAndColorDefaultsProvider)serviceProvider.GetService(typeof(IVsFontAndColorDefaultsProvider));
+                fontAndColorManager = (IVsFontAndColorCacheManager)serviceProvider.GetService(typeof(IVsFontAndColorCacheManager));
+                fontAndColorStorage = (IVsFontAndColorStorage)serviceProvider.GetService(typeof(IVsFontAndColorStorage));
+                fontAndColorStorage3 = (IVsFontAndColorStorage3)serviceProvider.GetService(typeof(IVsFontAndColorStorage3));
+                fontAndColorUtilities = (IVsFontAndColorUtilities)serviceProvider.GetService(typeof(IVsFontAndColorUtilities));
+                dte = (DTE)serviceProvider.GetService(typeof(DTE));
+
+                editorColorsGuid = new Guid(FontsAndColorsCategory.TextEditor);
+            }
+
+            public void SetDefaultColors()
+            { 
+                var props = dte.Properties["FontsAndColors", "TextEditor"];
+                var prop = props.Item("FontsAndColorsItems");
+
+                var colorItemMap = CreateColorableItemsMap((FontsAndColorsItems)prop.Object);
+
+                colorItemMap["Identifier"].Foreground = DefaultForegroundColor;
+                colorItemMap["label name"].Foreground = DefaultForegroundColor;
+                colorItemMap["namespace name"].Foreground = DefaultForegroundColor;
+                colorItemMap["method name"].Foreground = DefaultForegroundColor;
+                colorItemMap["extension method name"].Foreground = DefaultForegroundColor;
+                colorItemMap["keyword - control"].Foreground = DefaultForegroundColor;
+                colorItemMap["operator - overload"].Bold = false;
+                colorItemMap["static symbol"].Bold = false;
+            }
+
+            public void SetEnhancedColors()
+            {
+                var props = dte.Properties["FontsAndColors", "TextEditor"];
+                var prop = props.Item("FontsAndColorsItems");
+
+                var colorItemMap = CreateColorableItemsMap((FontsAndColorsItems)prop.Object);
+
+                var textItem = colorItemMap["Text"];
+                if (textItem.Background == 0x00FFFFFFu)
+                {
+                    // Light or Blue themes
+                    colorItemMap["Identifier"].Foreground = 0x00801000u;
+                    colorItemMap["label name"].Foreground = 0x00000000u;
+                    colorItemMap["namespace name"].Foreground = 0x00AF912Bu;
+                    colorItemMap["method name"].Foreground = 0x001F5374u;
+                    colorItemMap["keyword - control"].Foreground = 0x00C4088Fu;
+                    colorItemMap["operator - overload"].Bold = true;
+                    colorItemMap["static symbol"].Bold = true;
+                }
+                else
+                {
+                    // Dark Theme
+                    colorItemMap["Identifier"].Foreground = 0x00FEDC9Cu;
+                    colorItemMap["label name"].Foreground = 0x00FFFFFFu;
+                    colorItemMap["namespace name"].Foreground = 0x00B0C94Eu;
+                    colorItemMap["method name"].Foreground = 0x00AADCDCu;
+                    colorItemMap["keyword - control"].Foreground = 0x00E694EEu;
+                    colorItemMap["operator - overload"].Bold = true;
+                    colorItemMap["static symbol"].Bold = true;
+                }
+            }
+
+            private Dictionary<string, ColorableItems> CreateColorableItemsMap(FontsAndColorsItems fontsAndColorsItems)
+            {
+                return Enumerable.Range(1, fontsAndColorsItems.Count)
+                    .Select(index => fontsAndColorsItems.Item(index))
+                    .ToDictionary(item => item.Name);
+            }
         }
     }
 }

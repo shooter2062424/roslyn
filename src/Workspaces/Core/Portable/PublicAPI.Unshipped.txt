@@ -2,6 +2,11 @@ Microsoft.CodeAnalysis.CodeStyle.NotificationOption.Severity.get -> Microsoft.Co
 Microsoft.CodeAnalysis.CodeStyle.NotificationOption.Severity.set -> void
 abstract Microsoft.CodeAnalysis.Editing.SyntaxGenerator.AliasImportDeclaration(string aliasIdentifierName, Microsoft.CodeAnalysis.SyntaxNode name) -> Microsoft.CodeAnalysis.SyntaxNode
 abstract Microsoft.CodeAnalysis.Editing.SyntaxGenerator.NameExpression(Microsoft.CodeAnalysis.INamespaceOrTypeSymbol namespaceOrTypeSymbol) -> Microsoft.CodeAnalysis.SyntaxNode
+const Microsoft.CodeAnalysis.Classification.ClassificationTypeNames.ControlKeyword = "keyword - control" -> string
+const Microsoft.CodeAnalysis.Classification.ClassificationTypeNames.LabelName = "label name" -> string
+const Microsoft.CodeAnalysis.Classification.ClassificationTypeNames.NamespaceName = "namespace name" -> string
+const Microsoft.CodeAnalysis.Classification.ClassificationTypeNames.OperatorOverload = "operator - overload" -> string
+const Microsoft.CodeAnalysis.Classification.ClassificationTypeNames.StaticSymbol = "static symbol" -> string
 const Microsoft.CodeAnalysis.WorkspaceKind.MSBuild = "MSBuildWorkspace" -> string
 Microsoft.CodeAnalysis.Editing.SyntaxGenerator.AliasImportDeclaration(string aliasIdentifierName, Microsoft.CodeAnalysis.INamespaceOrTypeSymbol symbol) -> Microsoft.CodeAnalysis.SyntaxNode
 Microsoft.CodeAnalysis.FileTextLoader

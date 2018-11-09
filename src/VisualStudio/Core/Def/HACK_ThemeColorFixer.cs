@@ -75,6 +75,8 @@ namespace Microsoft.VisualStudio.LanguageServices
             UpdateForegroundColor(ClassificationTypeNames.XmlDocCommentComment, sourceFormatMap, targetFormatMap);
             UpdateForegroundColor(ClassificationTypeNames.XmlDocCommentCDataSection, sourceFormatMap, targetFormatMap);
 
+            UpdateForegroundColor(ClassificationTypeNames.ControlKeyword, sourceFormatMap, targetFormatMap);
+
             UpdateForegroundColor(ClassificationTypeNames.PreprocessorKeyword, sourceFormatMap, targetFormatMap);
             UpdateForegroundColor(ClassificationTypeNames.PreprocessorText, sourceFormatMap, targetFormatMap);
 
@@ -98,6 +100,10 @@ namespace Microsoft.VisualStudio.LanguageServices
             UpdateForegroundColor(ClassificationTypeNames.ExtensionMethodName, sourceFormatMap, targetFormatMap);
             UpdateForegroundColor(ClassificationTypeNames.PropertyName, sourceFormatMap, targetFormatMap);
             UpdateForegroundColor(ClassificationTypeNames.EventName, sourceFormatMap, targetFormatMap);
+            UpdateForegroundColor(ClassificationTypeNames.NamespaceName, sourceFormatMap, targetFormatMap);
+            UpdateForegroundColor(ClassificationTypeNames.LabelName, sourceFormatMap, targetFormatMap);
+
+            UpdateForegroundColor(ClassificationTypeNames.StaticSymbol, sourceFormatMap, targetFormatMap);
 
             UpdateForegroundColor(ClassificationTypeNames.VerbatimStringLiteral, sourceFormatMap, targetFormatMap);
 
