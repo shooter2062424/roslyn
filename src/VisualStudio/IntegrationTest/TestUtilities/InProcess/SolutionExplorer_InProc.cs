@@ -9,6 +9,7 @@ using System.Threading;
 using System.Xml.Linq;
 using EnvDTE80;
 using Microsoft.CodeAnalysis;
+using Microsoft.Test.Apex.VisualStudio;
 using Microsoft.VisualStudio.ProjectSystem.Properties;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -26,10 +27,7 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities.InProcess
         private static readonly IDictionary<string, string> _csharpProjectTemplates = InitializeCSharpProjectTemplates();
         private static readonly IDictionary<string, string> _visualBasicProjectTemplates = InitializeVisualBasicProjectTemplates();
 
-        private SolutionExplorer_InProc() { }
-
-        public static SolutionExplorer_InProc Create()
-            => new SolutionExplorer_InProc();
+        public SolutionExplorer_InProc(VisualStudioHost visualStudioHost) : base(visualStudioHost) { }
 
         private static IDictionary<string, string> InitializeCSharpProjectTemplates()
         {
@@ -493,7 +491,7 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities.InProcess
 
             GetDTE().ItemOperations.NewFile(itemTemplate, fileName);
         }
-            
+
 
         public void SetFileContents(string projectName, string relativeFilePath, string contents)
         {

@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Threading;
 using EnvDTE;
+using Microsoft.Test.Apex.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -23,7 +23,12 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities.InProcess
     /// </summary>
     internal abstract class InProcComponent : MarshalByRefObject
     {
-        protected InProcComponent() { }
+        protected VisualStudioHost _visualStudioHost;
+
+        protected InProcComponent(VisualStudioHost visualStudioHost)
+        {
+            _visualStudioHost = visualStudioHost;
+        }
 
         private static Dispatcher CurrentApplicationDispatcher
             => Application.Current.Dispatcher;

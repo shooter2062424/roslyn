@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using EnvDTE;
+using Microsoft.Test.Apex.VisualStudio;
 using Microsoft.VisualStudio.Setup.Configuration;
 using RunTests;
 using Process = System.Diagnostics.Process;
@@ -65,8 +66,8 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities
                 s_inHandler = true;
 
                 var assemblyDirectory = GetAssemblyDirectory();
-                var testName = CaptureTestNameAttribute.CurrentName ?? "Unknown";
-                var logDir = Path.Combine(assemblyDirectory, "xUnitResults", "Screenshots");
+                var testName = "Unknown"; // TODO get the test name or actuallly remove the class
+                var logDir = Path.Combine(assemblyDirectory, "MSTestsResults", "Screenshots");
                 var baseFileName = $"{testName}-{eventArgs.Exception.GetType().Name}-{DateTime.Now:HH.mm.ss}";
                 ScreenshotService.TakeScreenshot(Path.Combine(logDir, $"{baseFileName}.png"));
 
@@ -106,12 +107,12 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities
         /// <summary>
         /// Returns a <see cref="VisualStudioInstanceContext"/>, starting a new instance of Visual Studio if necessary.
         /// </summary>
-        public async Task<VisualStudioInstanceContext> GetNewOrUsedInstanceAsync(ImmutableHashSet<string> requiredPackageIds)
+        public async Task<VisualStudioInstanceContext> GetNewOrUsedInstanceAsync(VisualStudioHost visualStudioHost, ImmutableHashSet<string> requiredPackageIds)
         {
             try
             {
                 bool shouldStartNewInstance = ShouldStartNewInstance(requiredPackageIds);
-                await UpdateCurrentlyRunningInstanceAsync(requiredPackageIds, shouldStartNewInstance).ConfigureAwait(true);
+                await UpdateCurrentlyRunningInstanceAsync(visualStudioHost, requiredPackageIds, shouldStartNewInstance).ConfigureAwait(true);
 
                 return new VisualStudioInstanceContext(_currentlyRunningInstance, this);
             }
@@ -147,7 +148,7 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities
         /// <summary>
         /// Starts up a new <see cref="VisualStudioInstance"/>, shutting down any instances that are already running.
         /// </summary>
-        private async Task UpdateCurrentlyRunningInstanceAsync(ImmutableHashSet<string> requiredPackageIds, bool shouldStartNewInstance)
+        private async Task UpdateCurrentlyRunningInstanceAsync(VisualStudioHost visualStudioHost, ImmutableHashSet<string> requiredPackageIds, bool shouldStartNewInstance)
         {
             Process hostProcess;
             DTE dte;
@@ -185,7 +186,7 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities
 
                 Debug.Assert(_currentlyRunningInstance != null);
 
-                hostProcess = _currentlyRunningInstance.HostProcess;
+                hostProcess = _currentlyRunningInstance.VisualStudioHost.HostProcess;
                 dte = await IntegrationHelper.WaitForNotNullAsync(() => IntegrationHelper.TryLocateDteForProcess(hostProcess)).ConfigureAwait(true);
                 supportedPackageIds = _currentlyRunningInstance.SupportedPackageIds;
                 installationPath = _currentlyRunningInstance.InstallationPath;
@@ -193,7 +194,7 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities
                 _currentlyRunningInstance.Close(exitHostProcess: false);
             }
 
-            _currentlyRunningInstance = new VisualStudioInstance(hostProcess, dte, supportedPackageIds, installationPath);
+            _currentlyRunningInstance = new VisualStudioInstance(visualStudioHost, supportedPackageIds, installationPath);
         }
 
         private static IEnumerable<ISetupInstance> EnumerateVisualStudioInstances()

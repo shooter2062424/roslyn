@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using EnvDTE;
+using Microsoft.Test.Apex.VisualStudio;
 
 namespace Microsoft.VisualStudio.IntegrationTest.Utilities.InProcess
 {
@@ -26,13 +27,10 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities.InProcess
 
         private readonly EnvDTE.Debugger _debugger;
 
-        private Debugger_InProc()
+        public Debugger_InProc(VisualStudioHost visualStudioHost) : base(visualStudioHost)
         {
             _debugger = GetDTE().Debugger;
         }
-
-        public static Debugger_InProc Create()
-            => new Debugger_InProc();
 
         public void SetBreakPoint(string fileName, int lineNumber, int columnIndex)
         {

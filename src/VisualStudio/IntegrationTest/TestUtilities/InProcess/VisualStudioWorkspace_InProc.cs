@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.Editor.Options;
 using Microsoft.CodeAnalysis.Editor.Shared.Options;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Shared.TestHooks;
+using Microsoft.Test.Apex.VisualStudio;
 using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.Shell.Interop;
 using Roslyn.Hosting.Diagnostics.Waiters;
@@ -20,16 +21,13 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities.InProcess
         private static readonly Guid RoslynPackageId = new Guid("6cf2e545-6109-4730-8883-cf43d7aec3e1");
         private readonly VisualStudioWorkspace _visualStudioWorkspace;
 
-        private VisualStudioWorkspace_InProc()
+        public VisualStudioWorkspace_InProc(VisualStudioHost visualStudioHost) : base(visualStudioHost)
         {
             // we need to enable waiting service before we create workspace
             GetWaitingService().Enable(true);
 
             _visualStudioWorkspace = GetComponentModelService<VisualStudioWorkspace>();
         }
-
-        public static VisualStudioWorkspace_InProc Create()
-            => new VisualStudioWorkspace_InProc();
 
         public void SetOptionInfer(string projectName, bool value)
             => InvokeOnUIThread(() =>

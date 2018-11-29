@@ -16,7 +16,7 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities.OutOfProcess
             : base(visualStudioInstance)
         {
             _instance = visualStudioInstance;
-            _inProc = CreateInProcComponent<VisualStudioWorkspace_InProc>(visualStudioInstance);
+            _inProc = new VisualStudioWorkspace_InProc(visualStudioInstance.VisualStudioHost);
         }
 
         public bool IsUseSuggestionModeOn()

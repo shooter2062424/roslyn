@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using System.Windows.Media;
 using Microsoft.CodeAnalysis.Editor.Implementation.Highlighting;
 using Microsoft.CodeAnalysis.Editor.Shared.Extensions;
+using Microsoft.Test.Apex.VisualStudio;
 using Microsoft.VisualStudio.IntegrationTest.Utilities.Common;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -34,10 +35,7 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities.InProcess
     {
         private static readonly Guid IWpfTextViewId = new Guid("8C40265E-9FDB-4F54-A0FD-EBB72B7D0476");
 
-        private Editor_InProc() { }
-
-        public static Editor_InProc Create()
-            => new Editor_InProc();
+        public Editor_InProc(VisualStudioHost visualStudioHost) : base(visualStudioHost)  { }
 
         protected override IWpfTextView GetActiveTextView()
             => GetActiveTextViewHost().TextView;

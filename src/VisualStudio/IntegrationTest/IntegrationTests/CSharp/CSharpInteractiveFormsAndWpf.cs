@@ -2,38 +2,38 @@
 
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.IntegrationTest.Utilities;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Roslyn.Test.Utilities;
-using Xunit;
 
 namespace Roslyn.VisualStudio.IntegrationTests.CSharp
 {
-    [Collection(nameof(SharedIntegrationHostFixture))]
+    [TestClass]
     public class CSharpInteractiveFormsAndWpf : AbstractInteractiveWindowTest
     {
-        public CSharpInteractiveFormsAndWpf(VisualStudioInstanceFactory instanceFactory)
-            : base(instanceFactory)
+        public CSharpInteractiveFormsAndWpf( )
+            : base()
         {
         }
 
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync().ConfigureAwait(true);
-            VisualStudio.InteractiveWindow.SubmitText(@"#r ""System.Windows.Forms""
+            VisualStudioInstance.InteractiveWindow.SubmitText(@"#r ""System.Windows.Forms""
 #r ""WindowsBase""
 #r ""PresentationCore""
 #r ""PresentationFramework""
 #r ""System.Xaml""");
 
-            VisualStudio.InteractiveWindow.SubmitText(@"using System.Windows;
+            VisualStudioInstance.InteractiveWindow.SubmitText(@"using System.Windows;
 using System.Windows.Forms;
 using Wpf = System.Windows.Controls;");
         }
 
-        [WpfFact]
+        [TestMethod]
         public void InteractiveWithDisplayFormAndWpfWindow()
         {
             // 1) Create and display form and WPF window
-            VisualStudio.InteractiveWindow.SubmitText(@"Form form = new Form();
+            VisualStudioInstance.InteractiveWindow.SubmitText(@"Form form = new Form();
 form.Text = ""win form text"";
 form.Show();
 Window wind = new Window();
@@ -44,7 +44,7 @@ wind.Show();");
             var  wpf = AutomationElementHelper.FindAutomationElementAsync("wpf window text").Result;
 
             // 3) Add UI elements to windows and verify
-            VisualStudio.InteractiveWindow.SubmitText(@"// add a label to the form
+            VisualStudioInstance.InteractiveWindow.SubmitText(@"// add a label to the form
 Label l = new Label();
 l.Text = ""forms label text"";
 form.Controls.Add(l);
@@ -54,13 +54,13 @@ t.Text = ""wpf body text"";
 wind.Content = t;");
 
             var formLabel = form.FindDescendantByPath("text");
-            Assert.Equal("forms label text", formLabel.CurrentName);
+            Assert.AreEqual("forms label text", formLabel.CurrentName);
 
             var wpfContent = wpf.FindDescendantByPath("text");
-            Assert.Equal("wpf body text", wpfContent.CurrentName);
+            Assert.AreEqual("wpf body text", wpfContent.CurrentName);
 
             // 4) Close windows
-            VisualStudio.InteractiveWindow.SubmitText(@"form.Close();
+            VisualStudioInstance.InteractiveWindow.SubmitText(@"form.Close();
 wind.Close();");
         }
     }
