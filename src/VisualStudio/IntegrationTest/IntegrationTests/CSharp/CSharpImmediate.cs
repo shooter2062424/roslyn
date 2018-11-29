@@ -23,9 +23,9 @@ namespace Roslyn.VisualStudio.IntegrationTests.CSharp
         {
         }
 
-        public override async Task InitializeAsync()
+        public override void Initialize()
         {
-            await base.InitializeAsync().ConfigureAwait(true);
+            base.Initialize();
 
             VisualStudioInstance.SolutionExplorer.CreateSolution(nameof(CSharpInteractive));
             var testProj = new ProjectUtils.Project("TestProj");

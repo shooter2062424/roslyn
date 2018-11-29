@@ -5,7 +5,6 @@ using Microsoft.CodeAnalysis.Test.Utilities;
 using Microsoft.VisualStudio.IntegrationTest.Utilities;
 using Microsoft.VisualStudio.IntegrationTest.Utilities.Input;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Roslyn.Test.Utilities;
 
 using ProjName = Microsoft.VisualStudio.IntegrationTest.Utilities.Common.ProjectUtils.Project;
 
@@ -22,7 +21,7 @@ namespace Roslyn.VisualStudio.IntegrationTests.VisualBasic
         }
 
         [TestMethod, TestCategory(Traits.Features.LineCommit)]
-        void CaseCorrection()
+        public void CaseCorrection()
         {
             VisualStudioInstance.Editor.SetText(@"Module Goo
     Sub M()
@@ -36,7 +35,7 @@ End Module");
         }
 
         [TestMethod, TestCategory(Traits.Features.LineCommit)]
-        void UndoWithEndConstruct()
+        public void UndoWithEndConstruct()
         {
             VisualStudioInstance.Editor.SetText(@"Module Module1
     Sub Main()
@@ -78,7 +77,7 @@ End Module");
         }
 
         [TestMethod, Ignore("https://github.com/dotnet/roslyn/issues/20991"), TestCategory(Traits.Features.LineCommit)]
-        void CommitOnSave()
+        public void CommitOnSave()
         {
             VisualStudioInstance.Editor.SetText(@"Module Module1
     Sub Main()
@@ -96,7 +95,7 @@ End Module
         }
 
         [TestMethod, TestCategory(Traits.Features.LineCommit)]
-        void CommitOnFocusLost()
+        public void CommitOnFocusLost()
         {
             VisualStudioInstance.Editor.SetText(@"Module M
     Sub M()
@@ -116,7 +115,7 @@ End Module");
         }
 
         [TestMethod, TestCategory(Traits.Features.LineCommit)]
-        void CommitOnFocusLostDoesNotFormatWithPrettyListingOff()
+        public void CommitOnFocusLostDoesNotFormatWithPrettyListingOff()
         {
             try
             {

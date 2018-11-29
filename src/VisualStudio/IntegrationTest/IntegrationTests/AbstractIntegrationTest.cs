@@ -1,12 +1,16 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Immutable;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Test.Apex.VisualStudio;
 using Microsoft.VisualStudio.IntegrationTest.Utilities;
 using Microsoft.VisualStudio.IntegrationTest.Utilities.Harness;
 using Microsoft.VisualStudio.IntegrationTest.Utilities.Input;
+using Microsoft.VisualStudio.Setup.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Roslyn.VisualStudio.IntegrationTests
@@ -17,8 +21,13 @@ namespace Roslyn.VisualStudio.IntegrationTests
         protected readonly string SolutionName = "TestSolution";
 
         private readonly MessageFilter _messageFilter;
-     //   private readonly VisualStudioInstanceFactory _instanceFactory;
-     //   private VisualStudioInstanceContext _visualStudioContext;
+           private readonly VisualStudioInstanceFactory _instanceFactory;
+           private VisualStudioInstanceContext _visualStudioContext;
+
+        /// <summary>
+        /// Identifies the first time a Visual Studio instance is launched during an integration test run.
+        /// </summary>
+        private static bool _firstLaunch = true;
 
         protected AbstractIntegrationTest()
         {
@@ -41,18 +50,22 @@ namespace Roslyn.VisualStudio.IntegrationTests
 
         public VisualStudioInstance VisualStudioInstance { get; private set; }
 
-        public virtual async Task InitializeAsync()
+        public virtual void Initialize()
         {
             try
             {
-                foreach(var package in SharedIntegrationHostFixture.RequiredPackageIds)
-                {
-                    this.VisualStudio.Configuration.AddCompositionAssembly(package);
-                }
+                var requiredPackageIds = SharedIntegrationHostFixture.RequiredPackageIds;
+                var visualStudio = this.Operations.CreateHost<VisualStudioHost>();
+                //foreach(var package in requiredPackageIds)
+                //{
+                //    visualStudio.Configuration.AddCompositionAssembly(package);
+                //}
 
-                VisualStudioInstance = new VisualStudioInstance(VisualStudio, SharedIntegrationHostFixture.RequiredPackageIds, VisualStudio.ProcessStartInfo.ExecutablePath);
-                await Task.CompletedTask;
-//                _visualStudioContext = await _instanceFactory.GetNewOrUsedInstanceAsync(VisualStudio, SharedIntegrationHostFixture.RequiredPackageIds).ConfigureAwait(false);
+
+
+               _visualStudioContext = _instanceFactory.GetNewOrUsedInstanceAsync(VisualStudio, SharedIntegrationHostFixture.RequiredPackageIds);
+                VisualStudioInstance = _visualStudioContext.
+                    new VisualStudioInstance(visualStudio, supportedPackageIds, visualStudio.ProcessStartInfo.ExecutablePath);
             }
             catch
             {
@@ -68,7 +81,7 @@ namespace Roslyn.VisualStudio.IntegrationTests
         /// </summary>
         public virtual Task DisposeAsync()
         {
-    //        _visualStudioContext.Dispose();
+            _visualStudioContext.Dispose();
             return Task.CompletedTask;
         }
 

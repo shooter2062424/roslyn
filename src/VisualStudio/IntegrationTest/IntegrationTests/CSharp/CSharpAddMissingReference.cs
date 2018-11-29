@@ -105,9 +105,10 @@ class Program
 
         public CSharpAddMissingReference() : base() { }
 
-        public override async Task InitializeAsync()
+        [TestInitialize]
+        public override void  Initialize()
         {
-            await base.InitializeAsync().ConfigureAwait(true);
+            base.Initialize();
             VisualStudioInstance.SolutionExplorer.CreateSolution("ReferenceErrors", solutionElement: XElement.Parse(
                 "<Solution>" +
                $"   <Project ProjectName=\"{ClassLibrary1Name}\" ProjectTemplate=\"{WellKnownProjectTemplates.WinFormsApplication}\" Language=\"{LanguageNames.VisualBasic}\">" +

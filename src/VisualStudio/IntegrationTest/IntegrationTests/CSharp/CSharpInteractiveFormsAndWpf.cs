@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.IntegrationTest.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Roslyn.Test.Utilities;
 
 namespace Roslyn.VisualStudio.IntegrationTests.CSharp
 {
@@ -15,9 +13,9 @@ namespace Roslyn.VisualStudio.IntegrationTests.CSharp
         {
         }
 
-        public override async Task InitializeAsync()
+        public override void Initialize()
         {
-            await base.InitializeAsync().ConfigureAwait(true);
+            base.Initialize();
             VisualStudioInstance.InteractiveWindow.SubmitText(@"#r ""System.Windows.Forms""
 #r ""WindowsBase""
 #r ""PresentationCore""

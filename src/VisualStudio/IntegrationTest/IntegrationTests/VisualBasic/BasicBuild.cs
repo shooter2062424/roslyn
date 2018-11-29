@@ -19,9 +19,9 @@ namespace Roslyn.VisualStudio.IntegrationTests.VisualBasic
         {
         }
 
-        public override async Task InitializeAsync()
+        public override void Initialize()
         {
-            await base.InitializeAsync().ConfigureAwait(true);
+            base.Initialize();
             VisualStudioInstance.SolutionExplorer.CreateSolution(nameof(BasicBuild));
             var testProj = new ProjectUtils.Project("TestProj");
             VisualStudioInstance.SolutionExplorer.AddProject(testProj, WellKnownProjectTemplates.ConsoleApplication, LanguageNames.VisualBasic);

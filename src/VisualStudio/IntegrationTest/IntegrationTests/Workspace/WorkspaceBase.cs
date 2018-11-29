@@ -24,9 +24,9 @@ namespace Roslyn.VisualStudio.IntegrationTests.Workspace
 
         protected string DefaultProjectTemplate { get; }
 
-        public override async Task InitializeAsync()
+        public override void Initialize()
         {
-            await base.InitializeAsync().ConfigureAwait(true);
+            base.Initialize();
             VisualStudioInstance.Workspace.SetFullSolutionAnalysis(true);
         }
 

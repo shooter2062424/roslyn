@@ -9,9 +9,9 @@ namespace Roslyn.VisualStudio.IntegrationTests
     {
         protected AbstractInteractiveWindowTest() : base() { }
 
-        public override async Task InitializeAsync()
+        public override void Initialize()
         {
-            await base.InitializeAsync().ConfigureAwait(true);
+            base.Initialize();
             ClearInteractiveWindow();
         }
 

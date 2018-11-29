@@ -107,12 +107,13 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities
         /// <summary>
         /// Returns a <see cref="VisualStudioInstanceContext"/>, starting a new instance of Visual Studio if necessary.
         /// </summary>
-        public async Task<VisualStudioInstanceContext> GetNewOrUsedInstanceAsync(VisualStudioHost visualStudioHost, ImmutableHashSet<string> requiredPackageIds)
+        public VisualStudioInstanceContext GetNewOrUsedInstanceAsync(VisualStudioHost visualStudioHost, ImmutableHashSet<string> requiredPackageIds)
         {
             try
             {
                 bool shouldStartNewInstance = ShouldStartNewInstance(requiredPackageIds);
-                await UpdateCurrentlyRunningInstanceAsync(visualStudioHost, requiredPackageIds, shouldStartNewInstance).ConfigureAwait(true);
+                //   await UpdateCurrentlyRunningInstanceAsync(visualStudioHost, requiredPackageIds, shouldStartNewInstance).ConfigureAwait(true);
+                UpdateCurrentlyRunningInstanceAsync(visualStudioHost, requiredPackageIds, shouldStartNewInstance);
 
                 return new VisualStudioInstanceContext(_currentlyRunningInstance, this);
             }
@@ -148,7 +149,7 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities
         /// <summary>
         /// Starts up a new <see cref="VisualStudioInstance"/>, shutting down any instances that are already running.
         /// </summary>
-        private async Task UpdateCurrentlyRunningInstanceAsync(VisualStudioHost visualStudioHost, ImmutableHashSet<string> requiredPackageIds, bool shouldStartNewInstance)
+        private void UpdateCurrentlyRunningInstanceAsync(VisualStudioHost visualStudioHost, ImmutableHashSet<string> requiredPackageIds, bool shouldStartNewInstance)
         {
             Process hostProcess;
             DTE dte;
@@ -164,7 +165,7 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities
                 supportedPackageIds = ImmutableHashSet.CreateRange(instance.GetPackages().Select((supportedPackage) => supportedPackage.GetId()));
                 installationPath = instance.GetInstallationPath();
 
-                hostProcess = StartNewVisualStudioProcess(installationPath);
+                hostProcess = StartNewVisualStudioProcess(installationPath, visualStudioHost);
 
                 var procDumpInfo = ProcDumpInfo.ReadFromEnvironment();
                 if (procDumpInfo != null)
@@ -173,7 +174,7 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities
                 }
 
                 // We wait until the DTE instance is up before we're good
-                dte = await IntegrationHelper.WaitForNotNullAsync(() => IntegrationHelper.TryLocateDteForProcess(hostProcess)).ConfigureAwait(true);
+                dte = visualStudioHost.Dte;// await IntegrationHelper.WaitForNotNullAsync(() => IntegrationHelper.TryLocateDteForProcess(hostProcess)).ConfigureAwait(true);
             }
             else
             {
@@ -187,7 +188,7 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities
                 Debug.Assert(_currentlyRunningInstance != null);
 
                 hostProcess = _currentlyRunningInstance.VisualStudioHost.HostProcess;
-                dte = await IntegrationHelper.WaitForNotNullAsync(() => IntegrationHelper.TryLocateDteForProcess(hostProcess)).ConfigureAwait(true);
+                dte = visualStudioHost.Dte;// await IntegrationHelper.WaitForNotNullAsync(() => IntegrationHelper.TryLocateDteForProcess(hostProcess)).ConfigureAwait(true);
                 supportedPackageIds = _currentlyRunningInstance.SupportedPackageIds;
                 installationPath = _currentlyRunningInstance.InstallationPath;
 
@@ -223,7 +224,7 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities
             while (instancesFetched != 0);
         }
 
-        private static ISetupInstance LocateVisualStudioInstance(ImmutableHashSet<string> requiredPackageIds)
+        public static ISetupInstance LocateVisualStudioInstance(ImmutableHashSet<string> requiredPackageIds)
         {
             var vsInstallDir = Environment.GetEnvironmentVariable("__UNITTESTEXPLORER_VSINSTALLPATH__")
                 ?? Environment.GetEnvironmentVariable("VSAPPIDDIR");
@@ -291,7 +292,7 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities
                                 "There were no instances of Visual Studio found that match the specified requirements.");
         }
 
-        private static Process StartNewVisualStudioProcess(string installationPath)
+        private static Process StartNewVisualStudioProcess(string installationPath, VisualStudioHost visualStudioHost)
         {
             var vsExeFile = Path.Combine(installationPath, @"Common7\IDE\devenv.exe");
 
@@ -311,7 +312,11 @@ namespace Microsoft.VisualStudio.IntegrationTest.Utilities
             IntegrationHelper.KillProcess("VsJITDebugger");
             IntegrationHelper.KillProcess("dexplore");
 
-            var process = Process.Start(vsExeFile, VsLaunchArgs);
+            //   var process = Process.Start(vsExeFile, VsLaunchArgs);
+            visualStudioHost.ProcessStartInfo.ExecutablePath = vsExeFile;
+            visualStudioHost.ProcessStartInfo.CommandLineArguments = VsLaunchArgs;
+            visualStudioHost.Start();
+            var process = visualStudioHost.HostProcess;
             Debug.WriteLine($"Launched a new instance of Visual Studio. (ID: {process.Id})");
 
             return process;

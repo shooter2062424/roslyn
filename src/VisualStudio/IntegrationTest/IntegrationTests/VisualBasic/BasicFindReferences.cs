@@ -17,9 +17,7 @@ namespace Roslyn.VisualStudio.IntegrationTests.VisualBasic
     {
         protected override string LanguageName => LanguageNames.VisualBasic;
 
-        public BasicFindReferences() : base(nameof(BasicFindReferences))
-        {
-        }
+        public BasicFindReferences() : base(nameof(BasicFindReferences)) { }
 
         [TestMethod, TestCategory(Traits.Features.FindReferences)]
         public void FindReferencesToLocals()

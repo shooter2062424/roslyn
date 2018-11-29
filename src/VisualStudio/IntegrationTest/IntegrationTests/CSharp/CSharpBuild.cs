@@ -21,9 +21,9 @@ namespace Roslyn.VisualStudio.IntegrationTests.CSharp
         {
         }
 
-        public override async Task InitializeAsync()
+        public override void Initialize()
         {
-            await base.InitializeAsync().ConfigureAwait(true);
+            base.Initialize();
             VisualStudioInstance.SolutionExplorer.CreateSolution(nameof(CSharpBuild));
             VisualStudioInstance.SolutionExplorer.AddProject(new ProjectUtils.Project("TestProj"), WellKnownProjectTemplates.ConsoleApplication, LanguageNames.CSharp);
         }

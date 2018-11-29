@@ -3,11 +3,14 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.IntegrationTest.Utilities;
 using Microsoft.VisualStudio.IntegrationTest.Utilities.Common;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Roslyn.Test.Utilities;
+
 using ProjectUtils = Microsoft.VisualStudio.IntegrationTest.Utilities.Common.ProjectUtils;
 
 namespace Roslyn.VisualStudio.IntegrationTests
 {
+    [TestClass]
     public abstract class AbstractEditorTest : AbstractIntegrationTest
     {
         private readonly string _solutionName;
@@ -31,9 +34,10 @@ namespace Roslyn.VisualStudio.IntegrationTests
 
         protected abstract string LanguageName { get; }
 
-        public override async Task InitializeAsync()
+        [TestInitialize]
+        public override void Initialize()
         {
-            await base.InitializeAsync().ConfigureAwait(true);
+            base.Initialize();
 
             if (_solutionName != null)
             {
